@@ -17,6 +17,7 @@ func Test_isPrime(t *testing.T) {
 	}{
 		{"seven should be prime", 7, true, fmt.Sprintf(msgIsPrime, 7)},
 		{"eight shouldn't be prime", 8, false, fmt.Sprintf(msgIsNotPrime, 8, 2)},
+		{"twenty-five shouldn't be prime", 25, false, fmt.Sprintf(msgIsNotPrime, 25, 5)},
 		{"zero shouldn't be prime by def", 0, false, fmt.Sprintf(msgIsNotPrimeByDef, 0)},
 		{"zero shouldn't be prime by def", 1, false, fmt.Sprintf(msgIsNotPrimeByDef, 1)},
 		{"negative number shouldn't be prime", -11, false, fmt.Sprintf(msgNegativeNumAreNotPrimeByDef, -11)},
