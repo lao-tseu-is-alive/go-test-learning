@@ -1,6 +1,12 @@
 package main
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
+
+const errMsgNotExpected = "%s got ERROR:\nexpected :\t%s \nbut got  :\t%s"
+const errValueNotExpected = "%s got ERROR:\nexpected :\t%v \nbut got  :\t%v"
 
 func Test_isPrime(t *testing.T) {
 	primeTests := []struct {
@@ -9,25 +15,23 @@ func Test_isPrime(t *testing.T) {
 		expected bool
 		msg      string
 	}{
-		{"prime", 7, true, "7 is a prime number!"},
-		{"not prime", 8, false, "8 is not a prime number because it is divisible by 2!"},
-		{"zero", 0, false, "0 is not prime, by definition!"},
-		{"one", 1, false, "1 is not prime, by definition!"},
-		{"negative number", -11, false, "Negative numbers are not prime, by definition!"},
+		{"seven should be prime", 7, true, fmt.Sprintf(msgIsPrime, 7)},
+		{"eight shouldn't be prime", 8, false, fmt.Sprintf(msgIsNotPrime, 8, 2)},
+		{"zero shouldn't be prime by def", 0, false, fmt.Sprintf(msgIsNotPrimeByDef, 0)},
+		{"zero shouldn't be prime by def", 1, false, fmt.Sprintf(msgIsNotPrimeByDef, 1)},
+		{"negative number shouldn't be prime", -11, false, fmt.Sprintf(msgNegativeNumAreNotPrimeByDef, -11)},
 	}
 
-	for _, e := range primeTests {
-		result, msg := isPrime(e.testNum)
-		if e.expected && !result {
-			t.Errorf("%s: expected true but got false", e.name)
-		}
+	for _, tt := range primeTests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, msg := isPrime(tt.testNum)
+			if got != tt.expected {
+				t.Errorf(errValueNotExpected, tt.name, tt.expected, got)
+			}
 
-		if !e.expected && result {
-			t.Errorf("%s: expected false but got true", e.name)
-		}
-
-		if e.msg != msg {
-			t.Errorf("%s: expected %s but got %s", e.name, e.msg, msg)
-		}
+			if tt.msg != msg {
+				t.Errorf(errMsgNotExpected, tt.name, tt.msg, msg)
+			}
+		})
 	}
 }
