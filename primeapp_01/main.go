@@ -2,10 +2,12 @@ package main
 
 import "fmt"
 
-const msgIsNotPrimeByDef = "%d is not prime, by definition."
-const msgNegativeNumAreNotPrimeByDef = "%d is negative number so it's not prime, by definition."
-const msgIsPrime = "%d is a prime number."
-const msgIsNotPrime = "%d is not a prime number because it is divisible by %d."
+const (
+	msgIsNotPrimeByDef             = "%d is not prime, by definition."
+	msgNegativeNumAreNotPrimeByDef = "%d is negative number so it's not prime, by definition."
+	msgIsPrime                     = "%d is a prime number."
+	msgIsNotPrime                  = "%d is not a prime number because it is divisible by %d."
+)
 
 func main() {
 	n := 2

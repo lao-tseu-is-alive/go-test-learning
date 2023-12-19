@@ -2,11 +2,15 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"os"
 	"strings"
 	"testing"
 )
+
+const errMsgNotExpected = "%s got ERROR:\nexpected :\t%s \nbut got  :\t%s"
+const errValueNotExpected = "%s got ERROR:\nexpected :\t%v \nbut got  :\t%v"
 
 func Test_isPrime(t *testing.T) {
 	primeTests := []struct {
@@ -15,26 +19,25 @@ func Test_isPrime(t *testing.T) {
 		expected bool
 		msg      string
 	}{
-		{"prime", 7, true, "7 is a prime number!"},
-		{"not prime", 8, false, "8 is not a prime number because it is divisible by 2!"},
-		{"zero", 0, false, "0 is not prime, by definition!"},
-		{"one", 1, false, "1 is not prime, by definition!"},
-		{"negative number", -11, false, "Negative numbers are not prime, by definition!"},
+		{"seven should be prime", 7, true, fmt.Sprintf(msgIsPrime, 7)},
+		{"eight shouldn't be prime", 8, false, fmt.Sprintf(msgIsNotPrime, 8, 2)},
+		{"twenty-five shouldn't be prime", 25, false, fmt.Sprintf(msgIsNotPrime, 25, 5)},
+		{"zero shouldn't be prime by def", 0, false, fmt.Sprintf(msgIsNotPrimeByDef, 0)},
+		{"zero shouldn't be prime by def", 1, false, fmt.Sprintf(msgIsNotPrimeByDef, 1)},
+		{"negative number shouldn't be prime", -11, false, fmt.Sprintf(msgNegativeNumAreNotPrimeByDef, -11)},
 	}
 
-	for _, e := range primeTests {
-		result, msg := isPrime(e.testNum)
-		if e.expected && !result {
-			t.Errorf("%s: expected true but got false", e.name)
-		}
+	for _, tt := range primeTests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, msg := isPrime(tt.testNum)
+			if got != tt.expected {
+				t.Errorf(errValueNotExpected, tt.name, tt.expected, got)
+			}
 
-		if !e.expected && result {
-			t.Errorf("%s: expected false but got true", e.name)
-		}
-
-		if e.msg != msg {
-			t.Errorf("%s: expected %s but got %s", e.name, e.msg, msg)
-		}
+			if tt.msg != msg {
+				t.Errorf(errMsgNotExpected, tt.name, tt.msg, msg)
+			}
+		})
 	}
 }
 
@@ -93,31 +96,35 @@ func Test_intro(t *testing.T) {
 }
 
 func Test_checkNumbers(t *testing.T) {
+
 	tests := []struct {
 		name     string
 		input    string
 		expected string
 	}{
-		{name: "empty", input: "", expected: "Please enter a whole number!"},
-		{name: "zero", input: "0", expected: "0 is not prime, by definition!"},
-		{name: "one", input: "1", expected: "1 is not prime, by definition!"},
-		{name: "two", input: "2", expected: "2 is a prime number!"},
-		{name: "three", input: "3", expected: "3 is a prime number!"},
-		{name: "negative", input: "-1", expected: "Negative numbers are not prime, by definition!"},
-		{name: "typed", input: "three", expected: "Please enter a whole number!"},
-		{name: "decimal", input: "1.1", expected: "Please enter a whole number!"},
-		{name: "quit", input: "q", expected: ""},
-		{name: "QUIT", input: "Q", expected: ""},
-		{name: "greek", input: "επτά", expected: "Please enter a whole number!"},
+		{"seven should be prime", "7", fmt.Sprintf(msgIsPrime, 7)},
+		{"eight shouldn't be prime", "8", fmt.Sprintf(msgIsNotPrime, 8, 2)},
+		{"twenty-five shouldn't be prime", "25", fmt.Sprintf(msgIsNotPrime, 25, 5)},
+		{"zero shouldn't be prime by def", "0", fmt.Sprintf(msgIsNotPrimeByDef, 0)},
+		{"zero shouldn't be prime by def", "1", fmt.Sprintf(msgIsNotPrimeByDef, 1)},
+		{"negative number shouldn't be prime", "-11", fmt.Sprintf(msgNegativeNumAreNotPrimeByDef, -11)},
+		{"empty", "", msgEnterNumber},
+		{"typed", "three", msgEnterNumber},
+		{"decimal", "1.1", msgEnterNumber},
+		{"quit", "q", ""},
+		{"QUIT", "Q", ""},
+		{"greek", "επτά", msgEnterNumber},
 	}
 
-	for _, e := range tests {
-		input := strings.NewReader(e.input)
-		reader := bufio.NewScanner(input)
-		res, _ := checkNumbers(reader)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			input := strings.NewReader(tt.input)
+			reader := bufio.NewScanner(input)
+			res, _ := checkNumbers(reader)
 
-		if !strings.EqualFold(res, e.expected) {
-			t.Errorf("%s: expected %s, but got %s", e.name, e.expected, res)
-		}
+			if !strings.EqualFold(res, tt.expected) {
+				t.Errorf("%s: expected %s, but got %s", tt.name, tt.expected, res)
+			}
+		})
 	}
 }
